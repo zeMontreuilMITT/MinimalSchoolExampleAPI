@@ -12,6 +12,8 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
+        // relational property
+        public HashSet<Enrolment> Enrolments { get; set; } = new HashSet<Enrolment>();
      
         public Student()
         {
