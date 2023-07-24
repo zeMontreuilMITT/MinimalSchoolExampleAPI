@@ -69,12 +69,95 @@ app.MapPost("/students/grades/add", (int courseId, int studentId, int newGrade) 
 
 });
 
+app.MapGet("/students/not-passing", (int? courseId) =>
+{
+    HashSet<Course> courses = new HashSet<Course>();
+
+    // if course ID is not null 
+    if (courseId != null)
+    {
+        try
+        {
+            Course course = InternalDatabase.Courses.First(c => c.CourseNumber == courseId);
+
+            courses.Add(course);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.NotFound(ex.Message);
+        }
+    } else
+    {
+        courses = InternalDatabase.Courses;
+    }
+
+    HashSet<Student> StudentsNotPassing = InternalDatabase.Students.Where(s =>
+    {
+        return s.Enrolments.Any(e => e.Grade < e.Course.PassingGrade 
+            && courses.Contains(e.Course)
+        );
+    }).ToHashSet();
+
+    return Results.Ok(StudentsNotPassing);
+});
 
 // COURSES
 app.MapGet("courses/averagestudentcount", () => {
     return InternalDatabase.Courses.Average(c => c.Enrolments.Count);
 });
 
+app.MapGet("courses/compare", (int courseOne, int courseTwo) =>
+{
+    try
+    {
+        Course firstCourse = InternalDatabase.Courses.First(c => c.CourseNumber == courseOne);
+        Course secondCourse = InternalDatabase.Courses.First(c => c.CourseNumber == courseTwo);
+
+        HashSet<Course> courses = new HashSet<Course> { firstCourse, secondCourse };
+
+        int sumOfStudents = courses.Sum(c => c.Enrolments.Count);
+
+        return Results.Ok(new {
+            Courses = courses,
+            TotalStudents = sumOfStudents
+        });
+
+    } catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(ex.Message);
+    } 
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+});
+
+app.MapGet("courses/search/year-range", (int? before, int? after) =>
+{
+    if (before == null && after == null)
+    {
+        return Results.BadRequest("At least one value must be provided for before and after parameters.");
+    }
+
+    if(before == null)
+    {
+        before = Int32.MaxValue;
+    }
+
+    if(after == null)
+    {
+        after = Int32.MinValue;
+    }
+
+    if (before < after)
+    {
+        return Results.BadRequest("Cannot request courses with an After date greater than a Before date.");
+    }
+
+    HashSet<Course> coursesInRange = InternalDatabase.Courses.Where(c => c.Year <= before && c.Year >= after).ToHashSet();
+
+    return Results.Ok(coursesInRange);
+});
 
 app.Run();
 
@@ -115,23 +198,31 @@ static class InternalDatabase
         CreateStudent("Elmer", "Fudd");
     }
 
-    public static void CreateCourse(string title)
+    public static void CreateCourse(string title, int year)
     {
-        if (!String.IsNullOrEmpty(title))
+        try
         {
-            Course course = new Course(_pkCount++, title);
-            Courses.Add(course);
+            if (!String.IsNullOrEmpty(title))
+            {
+                Course course = new Course(_pkCount++, title, year);
+                Courses.Add(course);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Title must have a value.");
+            }
         }
-        else
+        catch (ArgumentOutOfRangeException ex)
         {
-            throw new ArgumentOutOfRangeException("Title must have a value.");
+            Console.WriteLine(ex.Message);
         }
     }
     private static void _seedCourseMethod()
     {
-        CreateCourse("Intro to Philosophy");
-        CreateCourse("Advanced Utilitarianism");
-        CreateCourse("Descartes for Dummies");
+        CreateCourse("Intro to Philosophy", 2023);
+        CreateCourse("Advanced Utilitarianism", 2023);
+        CreateCourse("Descartes for Dummies", 2024);
+        CreateCourse("Future Anthropology", 2040);
     }
 
     public static void CreateEnrolment(Student student, Course course)
@@ -149,9 +240,18 @@ static class InternalDatabase
         CreateEnrolment(Students.First(), Courses.Last());
         CreateEnrolment(Students.First(), Courses.First());
         CreateEnrolment(Students.Last(), Courses.Last());
-        CreateEnrolment(Students.Last(), Courses.Last());
+        CreateEnrolment(Students.Last(), Courses.First());
+
+        Enrolments.Last().Grade = 92;
+        Enrolments.First().Grade = 47;
     }
 }
 
-//  PRACTICE 
 
+// get all of the courses that fall between two specified years in a range. If no argument is given for either value (before or after), it should show all courses before a value, or all courses after
+
+// get all students whose names start with a given search value
+
+// get all courses whose numbers start with a given search value
+
+// provide each course a Passing Grade member, and get a list of students in a course not passing that Course. If no course search value is provided, show all students that are not passing at least one of their courses
