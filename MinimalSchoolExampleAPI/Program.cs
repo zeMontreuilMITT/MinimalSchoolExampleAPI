@@ -132,32 +132,6 @@ app.MapGet("courses/compare", (int courseOne, int courseTwo) =>
     }
 });
 
-app.MapGet("courses/search/year-range", (int? before, int? after) =>
-{
-    if (before == null && after == null)
-    {
-        return Results.BadRequest("At least one value must be provided for before and after parameters.");
-    }
-
-    if(before == null)
-    {
-        before = Int32.MaxValue;
-    }
-
-    if(after == null)
-    {
-        after = Int32.MinValue;
-    }
-
-    if (before < after)
-    {
-        return Results.BadRequest("Cannot request courses with an After date greater than a Before date.");
-    }
-
-    HashSet<Course> coursesInRange = InternalDatabase.Courses.Where(c => c.Year <= before && c.Year >= after).ToHashSet();
-
-    return Results.Ok(coursesInRange);
-});
 
 app.Run();
 
