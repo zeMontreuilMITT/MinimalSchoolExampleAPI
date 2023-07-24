@@ -11,8 +11,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 var app = builder.Build();
 
-// respond to GET request on "/hello" directory
-
+// STUDENTS
 app.MapGet("/students", () =>
 {
     return Results.Ok(InternalDatabase.Students);
@@ -34,6 +33,48 @@ app.MapGet("/students/{number}", (int number) =>
         return Results.Problem(ex.Message);
     }
 });
+
+app.MapPost("/students/grades/add", (int courseId, int studentId, int newGrade) =>
+{
+    try
+    {
+       // find the correct enrolment
+        Enrolment foundEnrolment = InternalDatabase.Enrolments.First(e =>
+        {
+            return e.CourseNumber == courseId && e.StudentNumber == studentId;
+        });
+
+        if(newGrade <= 100 && newGrade >= 0)
+        {
+            foundEnrolment.Grade = newGrade;
+            // return Results.Accepted
+            return Results.Ok(foundEnrolment);
+        } else
+        {
+            throw new ArgumentOutOfRangeException(nameof(newGrade));
+        }
+    } 
+    catch(InvalidOperationException ex)
+    {
+        return Results.NotFound(ex.Message);
+    }
+    catch (ArgumentOutOfRangeException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    } 
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+
+});
+
+
+// COURSES
+app.MapGet("courses/averagestudentcount", () => {
+    return InternalDatabase.Courses.Average(c => c.Enrolments.Count);
+});
+
 
 app.Run();
 
@@ -111,4 +152,6 @@ static class InternalDatabase
         CreateEnrolment(Students.Last(), Courses.Last());
     }
 }
+
+//  PRACTICE 
 
