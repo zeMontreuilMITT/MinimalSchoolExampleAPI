@@ -2,7 +2,7 @@
 {
     public class Course
     {
-        public int CourseNumber { get; set; }
+        public int Id { get; set; }
         public string CourseTitle { get; set; }
         
         private int _year;
@@ -44,7 +44,7 @@
 
         public Course(int courseNumber, string courseTitle, int year, int passingGrade = 50)
         {
-            CourseNumber = courseNumber;
+            Id = courseNumber;
             CourseTitle = courseTitle;
             Year = year;
             PassingGrade = passingGrade;

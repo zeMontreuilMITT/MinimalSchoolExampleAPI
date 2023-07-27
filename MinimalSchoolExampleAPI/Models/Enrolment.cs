@@ -7,11 +7,11 @@
 
 
         public Student Student { get; set; }
-        public int StudentNumber { get; set; }
+        public int StudentId { get; set; }
 
 
         public Course Course { get; set; }
-        public int CourseNumber { get; set; }
+        public int CourseId { get; set; }
 
         public Enrolment() { }
 
@@ -19,10 +19,10 @@
         {
             Id = id;
             Student = student;
-            StudentNumber = student.StudentNumber;
+            StudentId = student.Id;
 
             Course = course;
-            CourseNumber = course.CourseNumber;
+            CourseId = course.Id;
         }
     }
 }

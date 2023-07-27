@@ -8,7 +8,7 @@
     public class Student
     {
         // primary key
-        public int StudentNumber { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -22,7 +22,7 @@
 
         public Student(int studentNumber, string firstName, string lastName)
         {
-            StudentNumber = studentNumber;
+            Id = studentNumber;
             FirstName = firstName;
             LastName = lastName;
         }
