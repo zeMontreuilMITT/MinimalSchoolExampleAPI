@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinimalSchoolExampleAPI.Data;
 
@@ -11,9 +12,10 @@ using MinimalSchoolExampleAPI.Data;
 namespace MinimalSchoolExampleAPI.Migrations
 {
     [DbContext(typeof(SchoolExampleContext))]
-    partial class SchoolExampleContextModelSnapshot : ModelSnapshot
+    [Migration("20230728141804_AddStudentDOB")]
+    partial class AddStudentDOB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +44,7 @@ namespace MinimalSchoolExampleAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("MinimalSchoolExampleAPI.Models.Enrolment", b =>
@@ -68,7 +70,7 @@ namespace MinimalSchoolExampleAPI.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Enrolments", (string)null);
+                    b.ToTable("Enrolments");
                 });
 
             modelBuilder.Entity("MinimalSchoolExampleAPI.Models.Student", b =>
@@ -92,7 +94,7 @@ namespace MinimalSchoolExampleAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("MinimalSchoolExampleAPI.Models.Enrolment", b =>

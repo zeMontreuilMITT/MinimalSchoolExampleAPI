@@ -15,9 +15,8 @@
 
         public Enrolment() { }
 
-        public Enrolment(int id, Student student, Course course)
+        public Enrolment(Student student, Course course)
         {
-            Id = id;
             Student = student;
             StudentId = student.Id;
 

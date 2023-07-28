@@ -22,6 +22,8 @@
             }
         }
 
+        public int StudentCapacity { get; set; }
+
         private int _passingGrade;
 
         public int PassingGrade { get { return _passingGrade; }
@@ -42,9 +44,8 @@
 
         }
 
-        public Course(int courseNumber, string courseTitle, int year, int passingGrade = 50)
+        public Course(string courseTitle, int year, int passingGrade = 50)
         {
-            Id = courseNumber;
             CourseTitle = courseTitle;
             Year = year;
             PassingGrade = passingGrade;
